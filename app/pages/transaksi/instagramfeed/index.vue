@@ -1,0 +1,415 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { toastSuccess } from "~/utils/toast";
+import { confirmAction } from "~/utils/swal";
+
+import BaseStatCard from "~/components/form/BaseStatCard.vue";
+import BaseTable from "~/components/form/BaseTable.vue";
+import BaseModalTransaksiInstagramFeed from "~/components/base/transaksi/BaseModalTransaksiInstagramFeed.vue";
+
+useHead({
+  title: "Admin Transaksi Instagram Feed",
+});
+
+definePageMeta({
+  breadcrumb: [{ label: "Transaksi", to: "/transaksi" }, { label: "Instagram Feed" }],
+});
+
+/* =====================
+   STATE
+===================== */
+const showModal = ref(false);
+const isEdit = ref(false);
+const editIndex = ref<number | null>(null);
+
+const dataTable = ref([
+  {
+    kode_instagramfeed: "IGF20260508001",
+    link_embed:
+      "https://www.instagram.com/reel/DVGTOihD3nD/?utm_source=ig_embed&ig_rid=db22e58d-d0ef-4765-9931-c93f950c9124",
+    status: "aktif",
+  },
+  {
+    kode_instagramfeed: "IGF20260508002",
+    link_embed:
+      "https://www.instagram.com/reel/DVGTOihD3nD/?utm_source=ig_embed&ig_rid=db22e58d-d0ef-4765-9931-c93f950c9124",
+    status: "tidak_aktif",
+  },
+]);
+
+/* =====================
+   MODAL
+===================== */
+const selectedData = ref<any>(null);
+
+function openCreate() {
+  selectedData.value = null;
+  isEdit.value = false;
+  editIndex.value = null;
+  showModal.value = true;
+}
+
+function openEdit(index: number) {
+  selectedData.value = dataTable.value[index];
+  editIndex.value = index;
+  isEdit.value = true;
+  showModal.value = true;
+}
+
+function handleSave(data: any) {
+  if (isEdit.value && editIndex.value !== null) {
+    dataTable.value[editIndex.value] = data;
+    toastSuccess("Instagram Feed berhasil diubah");
+  } else {
+    dataTable.value.push(data);
+    toastSuccess("Instagram Feed berhasil ditambahkan");
+  }
+}
+
+/* =====================
+   DELETE
+===================== */
+async function deleteFeed(index: number) {
+  const result = await confirmAction(
+    "Apakah Anda yakin ingin menghapus Instagram Feed ini?"
+  );
+
+  if (!result.isConfirmed) return;
+
+  dataTable.value.splice(index, 1);
+
+  toastSuccess("Instagram Feed berhasil dihapus");
+}
+
+/* =====================
+   FILTER
+===================== */
+const filterStatusOptions = [
+  { value: "aktif", label: "Aktif" },
+  { value: "tidak_aktif", label: "Tidak Aktif" },
+];
+
+const kodeFilter = ref<string | undefined>();
+const statusFilter = ref<string | undefined>();
+
+const appliedFilter = ref({
+  kode: undefined as string | undefined,
+  status: undefined as string | undefined,
+});
+
+const kodeOptions = computed(() =>
+  dataTable.value.map((item) => ({
+    label: item.kode_instagramfeed,
+    value: item.kode_instagramfeed,
+  }))
+);
+
+function handleSearch() {
+  appliedFilter.value = {
+    kode: kodeFilter.value,
+    status: statusFilter.value,
+  };
+}
+
+function handleReset() {
+  kodeFilter.value = undefined;
+  statusFilter.value = undefined;
+
+  appliedFilter.value = {
+    kode: undefined,
+    status: undefined,
+  };
+}
+
+/* =====================
+   FILTERED DATA
+===================== */
+const filteredData = computed(() => {
+  return dataTable.value.filter((item) => {
+    const matchKode =
+      !appliedFilter.value.kode || item.kode_instagramfeed === appliedFilter.value.kode;
+
+    const matchStatus =
+      !appliedFilter.value.status || item.status === appliedFilter.value.status;
+
+    return matchKode && matchStatus;
+  });
+});
+
+/* =====================
+   NEXT NUMBER
+===================== */
+const nextNumber = computed(() => {
+  return dataTable.value.length + 1;
+});
+
+/* =====================
+   STATISTIK
+===================== */
+const statistik = computed(() => ({
+  total: dataTable.value.length,
+  aktif: dataTable.value.filter((i) => i.status === "aktif").length,
+  tidak: dataTable.value.filter((i) => i.status === "tidak_aktif").length,
+}));
+
+/* =====================
+   INTERFACE
+===================== */
+interface Feed {
+  kode_instagramfeed: string;
+  link_embed: string;
+  status: string;
+}
+
+/* =====================
+   TABLE
+===================== */
+const columns = [
+  { accessorKey: "no", header: "No" },
+  { accessorKey: "kode_instagramfeed", header: "Kode Feed" },
+  { accessorKey: "link_embed", header: "Link Embed" },
+  { accessorKey: "status", header: "Status" },
+  { accessorKey: "actions", header: "Aksi" },
+];
+</script>
+
+<template>
+  <!-- HEADER -->
+  <div class="mb-4">
+    <h1 class="text-xl font-semibold text-gray-800 dark:text-white mb-1">
+      Transaksi Instagram Feed
+    </h1>
+
+    <AppBreadcrumb />
+  </div>
+
+  <!-- STATISTIK -->
+  <div class="grid grid-cols-3 gap-4 mb-6">
+    <BaseStatCard
+      title="Total Feed"
+      :value="statistik.total"
+      color="from-blue-500 to-blue-600"
+      iconColor="text-blue-200"
+      textColor="text-blue-100"
+    />
+
+    <BaseStatCard
+      title="Feed Aktif"
+      :value="statistik.aktif"
+      color="from-green-500 to-green-600"
+      iconColor="text-white-200"
+      textColor="text-white-100"
+    />
+
+    <BaseStatCard
+      title="Feed Tidak Aktif"
+      :value="statistik.tidak"
+      color="from-red-500 to-red-600"
+      iconColor="text-white-200"
+      textColor="text-white-100"
+    />
+  </div>
+
+  <!-- FILTER -->
+  <div
+    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 mb-5"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- KODE -->
+      <USelectMenu
+        v-model="kodeFilter"
+        :items="kodeOptions"
+        value-key="value"
+        label-key="label"
+        placeholder="Pilih Kode Feed"
+        class="w-full px-3 py-3 rounded-xl text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 transition-all duration-200"
+      />
+
+      <!-- STATUS -->
+      <USelectMenu
+        v-model="statusFilter"
+        :items="filterStatusOptions"
+        value-key="value"
+        label-key="label"
+        placeholder="Pilih Status"
+        class="w-full px-3 py-3 rounded-xl text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 transition-all duration-200"
+      />
+    </div>
+
+    <div class="flex items-center gap-2 mt-5">
+      <button
+        @click="handleSearch"
+        class="bg-emerald-500 dark:bg-emerald-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-emerald-600 dark:hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm"
+      >
+        <UIcon name="i-heroicons-magnifying-glass" class="w-5 h-5 text-white" />
+        Cari
+      </button>
+
+      <button
+        @click="handleReset"
+        class="bg-red-500 dark:bg-red-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-red-600 dark:hover:bg-red-700 transition flex items-center gap-2 shadow-sm"
+      >
+        <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 text-white" />
+        Muat Ulang
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div
+    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700"
+  >
+    <!-- BUTTON -->
+    <div class="flex justify-end mb-4">
+      <button
+        @click="openCreate"
+        class="bg-emerald-500 text-white px-4 py-2.5 rounded-lg text-sm flex items-center gap-2"
+      >
+        <UIcon name="i-heroicons-plus-circle" class="w-5 h-5" />
+        Tambah
+      </button>
+    </div>
+
+    <!-- TABLE -->
+    <BaseTable :data="filteredData" :columns="columns" max-height="calc(100vh - 350px)">
+      <!-- NO -->
+      <template #no-cell="{ row }">
+        <span class="text-xs">
+          {{ row.index + 1 }}
+        </span>
+      </template>
+
+      <!-- KODE -->
+      <template #kode_instagramfeed-cell="{ row }">
+        <span class="text-xs font-semibold">
+          {{ (row.original as Feed).kode_instagramfeed }}
+        </span>
+      </template>
+
+      <!-- LINK EMBED -->
+      <template #link_embed-cell="{ row }">
+        <div
+          class="group relative flex items-center justify-between gap-4 min-w-[340px] rounded-3xl border border-pink-100 dark:border-slate-700 bg-gradient-to-br from-pink-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_35px_rgba(236,72,153,0.18)] transition-all duration-300 overflow-hidden"
+        >
+          <!-- GLOW -->
+          <div
+            class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-pink-500/5 via-orange-400/5 to-yellow-400/5"
+          ></div>
+
+          <!-- LEFT -->
+          <div class="relative flex items-center gap-4 overflow-hidden">
+            <!-- ICON -->
+            <div class="relative shrink-0">
+              <!-- OUTER -->
+              <div
+                class="w-14 h-14 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-[2px] shadow-lg"
+              >
+                <!-- INNER -->
+                <div
+                  class="w-full h-full rounded-[14px] bg-white dark:bg-slate-900 flex items-center justify-center"
+                >
+                  <UIcon name="i-simple-icons-instagram" class="w-6 h-6 text-pink-500" />
+                </div>
+              </div>
+
+              <!-- ONLINE DOT -->
+              <span
+                class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900"
+              ></span>
+            </div>
+
+            <!-- TEXT -->
+            <div class="overflow-hidden">
+              <!-- TITLE -->
+              <div class="flex items-center gap-1.5 mb-1">
+                <p class="text-sm font-semibold text-slate-800 dark:text-white truncate">
+                  Instagram Feed
+                </p>
+
+                <UIcon
+                  name="i-heroicons-check-badge-solid"
+                  class="w-4 h-4 text-blue-500 shrink-0"
+                />
+              </div>
+
+              <!-- URL -->
+              <p
+                class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[190px]"
+              >
+                {{ (row.original as Feed).link_embed }}
+              </p>
+
+              <!-- STATUS -->
+              <div class="flex items-center gap-1.5 mt-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+
+                <p class="text-[10px] text-emerald-600 font-medium">Ready to Open</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <a
+            :href="(row.original as Feed).link_embed"
+            target="_blank"
+            class="relative shrink-0 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white text-xs font-semibold transition-all duration-300 flex items-center gap-2 shadow-lg hover:scale-[1.03] active:scale-[0.97]"
+          >
+            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
+
+            Buka
+          </a>
+        </div>
+      </template>
+
+      <!-- STATUS -->
+      <template #status-cell="{ row }">
+        <span
+          :class="[
+            'px-2.5 py-1 text-xs font-medium rounded-full',
+            (row.original as Feed).status === 'aktif'
+              ? 'bg-emerald-100 text-emerald-700'
+              : 'bg-rose-100 text-rose-700',
+          ]"
+        >
+          {{
+            (row.original as Feed).status === "aktif"
+              ? "Aktif"
+              : "Tidak Aktif"
+          }}
+        </span>
+      </template>
+
+      <!-- AKSI -->
+      <template #actions-cell="{ row }">
+        <div class="flex gap-2">
+          <!-- EDIT -->
+          <button
+            @click="openEdit(row.index)"
+            class="p-2 bg-amber-400 text-white rounded-lg"
+          >
+            <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+          </button>
+
+          <!-- DELETE -->
+          <button
+            @click="deleteFeed(row.index)"
+            class="p-2 bg-rose-500 text-white rounded-lg"
+          >
+            <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+          </button>
+        </div>
+      </template>
+    </BaseTable>
+
+    <!-- MODAL -->
+    <BaseModalTransaksiInstagramFeed
+      size="lg"
+      :model-value="showModal"
+      @update:modelValue="showModal = $event"
+      :is-edit="isEdit"
+      :initialData="selectedData"
+      :next-number="nextNumber"
+      @save="handleSave"
+    />
+  </div>
+</template>
