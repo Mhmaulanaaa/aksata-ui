@@ -6,7 +6,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Dashboard EMR | AKSATA",
+  title: "AKSATA ",
 });
 
 /* ================= FILTER & SEARCH ================= */
@@ -217,8 +217,7 @@ const handleCallDoctor = (patient: Patient) => {
 };
 
 const handlePatientDetail = (patient: Patient) => {
-  // TODO: Arahkan ke halaman detail pasien.
-  console.log("Detail pasien:", patient.id);
+  navigateTo(`/dashboard/pasien/${patient.id}`);
 };
 
 const formatNumber = (value: number) => value.toLocaleString("id-ID");
@@ -228,46 +227,11 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
   <div
     class="min-h-screen space-y-4 p-1 transition-colors duration-300 dark:bg-slate-950 sm:p-4 lg:p-5"
   >
-    <!-- BREADCRUMB -->
-    <div class="flex items-center gap-2 px-1">
-      <UIcon name="i-lucide-house" class="h-4 w-4 text-emerald-500" />
-
-      <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-        Beranda
-      </span>
-
-      <UIcon name="i-lucide-chevron-right" class="h-3 w-3 text-slate-400" />
-
-      <span class="text-xs text-slate-500 dark:text-slate-400"> Dashboard </span>
-    </div>
-
     <!-- ================= STATISTICS ================= -->
 
     <section
       class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5"
     >
-      <div class="mb-4 flex items-center justify-between">
-        <div>
-          <h2 class="text-sm font-bold text-slate-800 dark:text-white">
-            Ringkasan Pelayanan
-          </h2>
-
-          <p class="mt-1 text-[11px] text-slate-400">
-            Statistik kunjungan dan pelayanan pasien
-          </p>
-        </div>
-
-        <div
-          class="hidden items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 dark:bg-emerald-900/20 sm:flex"
-        >
-          <span class="h-2 w-2 rounded-full bg-emerald-500" />
-
-          <span class="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
-            Data Pelayanan
-          </span>
-        </div>
-      </div>
-
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         <div
           v-for="stat in stats"
