@@ -106,7 +106,9 @@ const tabComponents: Record<string, Component> = {
   ringkasan: defineAsyncComponent(
     () => import("~/components/pasien/tabs/RingkasanTab.vue")
   ),
-  asesmen: defineAsyncComponent(() => import("~/components/pasien/tabs/AsesmenTab.vue")),
+  asesmen: defineAsyncComponent(
+    () => import("~/components/pasien/asesmen/TabAsesmen.vue")
+  ),
   pemeriksaan: defineAsyncComponent(
     () => import("~/components/pasien/tabs/PemeriksaanTab.vue")
   ),
