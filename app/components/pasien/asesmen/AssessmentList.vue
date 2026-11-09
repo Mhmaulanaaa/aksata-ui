@@ -76,14 +76,21 @@ function getActionIcon(status: AssessmentStatus) {
   <div class="space-y-5">
     <!-- HEADER -->
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h2 class="text-base font-bold text-slate-800 dark:text-white">
-          Asesmen & Pengkajian
-        </h2>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+        >
+          <UIcon name="i-lucide-clipboard-check" class="size-5" />
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-slate-800 dark:text-white">
+            Asesmen & Pengkajian
+          </h2>
 
-        <p class="mt-1 text-xs text-slate-500">
-          Riwayat pemeriksaan dan pengkajian pasien.
-        </p>
+          <p class="mt-1 text-xs text-slate-500">
+            Riwayat pemeriksaan dan pengkajian pasien.
+          </p>
+        </div>
       </div>
 
       <UBadge color="neutral" variant="subtle"> {{ total }} Asesmen </UBadge>

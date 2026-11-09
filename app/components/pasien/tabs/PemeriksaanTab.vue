@@ -1,71 +1,205 @@
 <script setup lang="ts">
-defineProps<{ patient?: unknown; patientId?: number }>();
 import { reactive, ref } from "vue";
-const type = ref("SOAP");
-const form = reactive({
-  subjektif: "Pasien mengeluhkan penglihatan kabur pada mata kanan.",
-  objektif: "Kesadaran compos mentis. Pemeriksaan awal dalam batas pemantauan.",
-  assessment: "Perlu evaluasi lanjutan oleh dokter spesialis mata.",
-  planning: "Dilakukan pemeriksaan lanjutan sesuai indikasi klinis.",
+
+import PemeriksaanSoap from "~/components/pasien/pemeriksaan/PemeriksaanSoap.vue";
+import PemeriksaanSoapie from "~/components/pasien/pemeriksaan/PemeriksaanSoapie.vue";
+import PemeriksaanAdime from "~/components/pasien/pemeriksaan/PemeriksaanAdime.vue";
+
+defineProps<{
+  patient?: unknown;
+  patientId?: number;
+}>();
+
+type TabKey = "SOAP" | "SOAPIE" | "ADIME";
+
+type Status =
+  | "Belum tersimpan"
+  | "Perubahan belum disimpan"
+  | "Draft tersimpan"
+  | "Tersimpan";
+
+type FormPayload = Record<string, string>;
+
+const activeTab = ref<TabKey>("SOAP");
+
+const tabs: {
+  key: TabKey;
+  label: string;
+  icon: string;
+}[] = [
+  {
+    key: "SOAP",
+    label: "SOAP",
+    icon: "i-lucide-clipboard-list",
+  },
+  {
+    key: "SOAPIE",
+    label: "SOAPIE",
+    icon: "i-lucide-notebook-pen",
+  },
+  {
+    key: "ADIME",
+    label: "ADIME",
+    icon: "i-lucide-apple",
+  },
+];
+
+const statuses = reactive<Record<TabKey, Status>>({
+  SOAP: "Belum tersimpan",
+  SOAPIE: "Belum tersimpan",
+  ADIME: "Belum tersimpan",
 });
-const fields = [
-  {
-    key: "subjektif",
-    label: "Subjektif (S)",
-    hint: "Keluhan dan informasi dari pasien.",
-  },
-  {
-    key: "objektif",
-    label: "Objektif (O)",
-    hint: "Hasil pemeriksaan fisik dan penunjang.",
-  },
-  { key: "assessment", label: "Asesmen (A)", hint: "Kesimpulan atau penilaian klinis." },
-  { key: "planning", label: "Planning (P)", hint: "Rencana tindakan dan tindak lanjut." },
-] as const;
+
+const drafts = reactive<Record<TabKey, FormPayload | null>>({
+  SOAP: null,
+  SOAPIE: null,
+  ADIME: null,
+});
+
+const savedRecords = reactive<Record<TabKey, FormPayload | null>>({
+  SOAP: null,
+  SOAPIE: null,
+  ADIME: null,
+});
+
+const getStatusColor = (status: Status) => {
+  switch (status) {
+    case "Tersimpan":
+      return "success";
+    case "Draft tersimpan":
+      return "info";
+    case "Perubahan belum disimpan":
+      return "warning";
+    default:
+      return "neutral";
+  }
+};
+
+const getStatusLabel = (status: Status) => {
+  switch (status) {
+    case "Tersimpan":
+      return "Tersimpan";
+    case "Draft tersimpan":
+      return "Draft";
+    case "Perubahan belum disimpan":
+      return "Belum disimpan";
+    default:
+      return "Belum ada data";
+  }
+};
+
+const markChanged = (tab: TabKey) => {
+  statuses[tab] = "Perubahan belum disimpan";
+};
+
+const saveDraft = (tab: TabKey, payload: FormPayload) => {
+  drafts[tab] = { ...payload };
+  statuses[tab] = "Draft tersimpan";
+
+  console.log(`[DUMMY] Draft ${tab} berhasil disimpan:`, drafts[tab]);
+};
+
+const saveExamination = (tab: TabKey, payload: FormPayload) => {
+  savedRecords[tab] = { ...payload };
+  drafts[tab] = null;
+  statuses[tab] = "Tersimpan";
+
+  console.log(`[DUMMY] Pemeriksaan ${tab} berhasil disimpan:`, savedRecords[tab]);
+};
 </script>
+
 <template>
   <div class="space-y-5">
+    <!-- HEADER -->
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h2 class="text-base font-bold">Pemeriksaan Klinis</h2>
-        <p class="mt-1 text-xs text-slate-500">Contoh formulir pemeriksaan (dummy UI).</p>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+        >
+          <UIcon name="i-lucide-stethoscope" class="size-5" />
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">Pemeriksaan</h2>
+          <p class="text-xs text-slate-500">Dokumentasi pemeriksaan pasien.</p>
+        </div>
       </div>
-      <UBadge color="warning" variant="subtle">Belum tersimpan</UBadge>
+
+      <UBadge color="neutral" variant="subtle"> Mode Dummy </UBadge>
     </div>
-    <div class="flex gap-2 border-b border-slate-200 dark:border-slate-800">
-      <button
-        v-for="t in ['SOAP', 'SOAPIE', 'ADIME']"
-        :key="t"
-        class="border-b-2 px-4 py-3 text-xs font-bold"
-        :class="
-          type === t
-            ? 'border-emerald-500 text-emerald-600'
-            : 'border-transparent text-slate-400'
-        "
-        @click="type = t"
-      >
-        {{ t }}
-      </button>
+
+    <!-- SIMPLE TABS -->
+    <div class="border-b border-slate-200 dark:border-slate-800">
+      <div class="flex gap-5 overflow-x-auto">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          type="button"
+          @click="activeTab = tab.key"
+          class="relative flex shrink-0 items-center gap-2 border-b-2 px-1 pb-3 pt-2 text-sm font-semibold transition-colors"
+          :class="
+            activeTab === tab.key
+              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          "
+        >
+          <UIcon :name="tab.icon" class="size-4" />
+
+          <span>{{ tab.label }}</span>
+
+          <span
+            v-if="statuses[tab.key] === 'Tersimpan'"
+            class="size-1.5 rounded-full bg-emerald-500"
+          />
+          <span
+            v-else-if="statuses[tab.key] === 'Draft tersimpan'"
+            class="size-1.5 rounded-full bg-blue-500"
+          />
+          <span
+            v-else-if="statuses[tab.key] === 'Perubahan belum disimpan'"
+            class="size-1.5 rounded-full bg-amber-500"
+          />
+        </button>
+      </div>
     </div>
-    <div class="grid gap-4 lg:grid-cols-2">
-      <div
-        v-for="f in fields"
-        :key="f.key"
-        class="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
-      >
-        <label :for="f.key" class="text-sm font-bold">{{ f.label }}</label>
-        <p class="mt-1 text-[11px] text-slate-500">{{ f.hint }}</p>
-        <textarea
-          :id="f.key"
-          v-model="form[f.key]"
-          rows="4"
-          class="mt-3 w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 outline-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-800"
+
+    <!-- ACTIVE TAB STATUS -->
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-500"> Status {{ activeTab }}: </span>
+
+        <UBadge :color="getStatusColor(statuses[activeTab])" variant="subtle" size="sm">
+          {{ getStatusLabel(statuses[activeTab]) }}
+        </UBadge>
+      </div>
+
+      <span class="text-[10px] text-slate-400"> {{ activeTab }} / 3 </span>
+    </div>
+
+    <!-- TAB CONTENT -->
+    <div>
+      <div v-show="activeTab === 'SOAP'">
+        <PemeriksaanSoap
+          @change="markChanged('SOAP')"
+          @save-draft="saveDraft('SOAP', $event)"
+          @save="saveExamination('SOAP', $event)"
         />
       </div>
-    </div>
-    <div class="flex justify-end gap-2">
-      <UButton color="neutral" variant="outline">Simpan Draft</UButton
-      ><UButton color="primary" icon="i-lucide-save">Simpan Pemeriksaan</UButton>
+
+      <div v-show="activeTab === 'SOAPIE'">
+        <PemeriksaanSoapie
+          @change="markChanged('SOAPIE')"
+          @save-draft="saveDraft('SOAPIE', $event)"
+          @save="saveExamination('SOAPIE', $event)"
+        />
+      </div>
+
+      <div v-show="activeTab === 'ADIME'">
+        <PemeriksaanAdime
+          @change="markChanged('ADIME')"
+          @save-draft="saveDraft('ADIME', $event)"
+          @save="saveExamination('ADIME', $event)"
+        />
+      </div>
     </div>
   </div>
 </template>

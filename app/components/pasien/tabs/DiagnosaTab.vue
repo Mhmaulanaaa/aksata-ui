@@ -20,11 +20,18 @@ const diagnoses = [
 <template>
   <div class="space-y-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h2 class="text-base font-bold">Diagnosa Pasien</h2>
-        <p class="mt-1 text-xs text-slate-500">
-          Daftar diagnosa yang tercatat pada pelayanan pasien.
-        </p>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+        >
+          <UIcon name="i-lucide-notebook-text" class="size-5" />
+        </div>
+        <div>
+          <h2 class="text-base font-bold">Diagnosa Pasien</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Daftar diagnosa yang tercatat pada pelayanan pasien.
+          </p>
+        </div>
       </div>
       <UButton color="primary" icon="i-lucide-plus" size="sm">Tambah Diagnosa</UButton>
     </div>

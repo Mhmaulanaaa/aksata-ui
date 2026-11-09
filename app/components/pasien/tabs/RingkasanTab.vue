@@ -15,13 +15,20 @@ const activities = [
 </script>
 <template>
   <div class="space-y-5">
-    <div>
-      <h2 class="text-base font-bold text-slate-800 dark:text-white">
-        Ringkasan Pelayanan
-      </h2>
-      <p class="mt-1 text-xs text-slate-500">
-        Ikhtisar informasi dan aktivitas pelayanan pasien.
-      </p>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+      >
+        <UIcon name="i-lucide-layout-dashboard" class="size-5" />
+      </div>
+      <div>
+        <h2 class="text-base font-bold text-slate-800 dark:text-white">
+          Ringkasan Pelayanan
+        </h2>
+        <p class="mt-1 text-xs text-slate-500">
+          Ikhtisar informasi dan aktivitas pelayanan pasien.
+        </p>
+      </div>
     </div>
     <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <div
