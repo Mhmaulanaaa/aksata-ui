@@ -101,6 +101,13 @@ const tabs: PatientTab[] = [
   { label: "Resep", value: "resep", icon: "i-lucide-pill" },
   { label: "Riwayat Medis", value: "riwayat", icon: "i-lucide-history" },
 ];
+const navigateToTab = (tab: string) => {
+  const isValidTab = tabs.some((item) => item.value === tab);
+
+  if (!isValidTab) return;
+
+  activeTab.value = tab;
+};
 // Setiap tab menjadi async chunk; komponen baru dimuat saat tab dipilih.
 const tabComponents: Record<string, Component> = {
   ringkasan: defineAsyncComponent(
@@ -130,7 +137,7 @@ const openInformation = () => {
 <template>
   <div v-if="patient" class="min-h-screen space-y-4 p-1 sm:p-4 lg:p-5">
     <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-      <NuxtLink to="/" class="hover:text-emerald-600">Beranda</NuxtLink
+      <NuxtLink to="/dashboard" class="hover:text-emerald-600">Beranda</NuxtLink
       ><UIcon name="i-lucide-chevron-right" class="h-3 w-3" /><NuxtLink
         to="/dashboard"
         class="hover:text-emerald-600"
@@ -148,13 +155,15 @@ const openInformation = () => {
     <PatientWarning v-if="patient.peringatan" :message="patient.peringatan" />
     <PatientNavigation v-model="activeTab" :tabs="tabs" />
     <section class="min-h-[360px]">
-      <KeepAlive :max="4"
-        ><component
+      <KeepAlive :max="4">
+        <component
           :is="activeComponent"
           :key="`${patient.id}-${activeTab}`"
           :patient="patient"
           :patient-id="patient.id"
-      /></KeepAlive>
+          @navigate-tab="navigateToTab"
+        />
+      </KeepAlive>
     </section>
     <div
       class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-slate-800"
