@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 
@@ -86,41 +85,27 @@ const formDate = ref("");
 // COMPUTED
 // ==========================================
 
-const isReadOnly = computed(
-  () => props.assessment.status === "Selesai"
-);
+const isReadOnly = computed(() => props.assessment.status === "Selesai");
 
-const isNew = computed(
-  () => props.assessment.status === "Belum Diisi"
-);
+const isNew = computed(() => props.assessment.status === "Belum Diisi");
 
-const isDraft = computed(
-  () => props.assessment.status === "Draft"
-);
+const isDraft = computed(() => props.assessment.status === "Draft");
 
 const missingFields = computed(() => {
   const emptySections = formSections.value.reduce(
     (total, section) =>
-      total +
-      section.fields.filter((field) => !field.value.trim()).length,
+      total + section.fields.filter((field) => !field.value.trim()).length,
     0
   );
 
-  const emptyVitals = formVitals.value.filter(
-    (vital) => !vital.value.trim()
-  ).length;
+  const emptyVitals = formVitals.value.filter((vital) => !vital.value.trim()).length;
 
   return (
-    emptySections +
-    emptyVitals +
-    (!formAuthor.value ? 1 : 0) +
-    (!formDate.value ? 1 : 0)
+    emptySections + emptyVitals + (!formAuthor.value ? 1 : 0) + (!formDate.value ? 1 : 0)
   );
 });
 
-const canComplete = computed(
-  () => missingFields.value === 0
-);
+const canComplete = computed(() => missingFields.value === 0);
 
 // ==========================================
 // HELPER
@@ -166,9 +151,7 @@ function initializeForm() {
 
   formAuthor.value = props.assessment.author || "";
 
-  formDate.value =
-    props.assessment.dateISO ||
-    getTodayDate();
+  formDate.value = props.assessment.dateISO || getTodayDate();
 
   isEditing.value = isNew.value;
 }
@@ -238,12 +221,14 @@ function saveAssessment(status: "Draft" | "Selesai") {
     dateISO: formDate.value,
     status,
   });
+
+  // Setelah berhasil dikirim ke parent, keluar dari mode edit.
+  isEditing.value = false;
 }
 </script>
 
 <template>
   <div class="space-y-5">
-
     <!-- ================================== -->
     <!-- ASSESSMENT HEADER -->
     <!-- ================================== -->
@@ -251,14 +236,12 @@ function saveAssessment(status: "Draft" | "Selesai") {
     <div
       class="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
     >
-
       <!-- IDENTITAS ASESMEN -->
 
       <div
         class="border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white p-4 dark:border-slate-800 dark:from-emerald-950/30 dark:to-slate-900 sm:p-5"
       >
         <div class="flex items-start gap-3">
-
           <UButton
             color="neutral"
             variant="soft"
@@ -274,7 +257,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
           </div>
 
           <div class="min-w-0 flex-1">
-
             <div class="flex flex-wrap items-center gap-2">
               <p class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
                 {{ assessment.code }}
@@ -285,8 +267,8 @@ function saveAssessment(status: "Draft" | "Selesai") {
                   assessment.status === 'Selesai'
                     ? 'success'
                     : assessment.status === 'Draft'
-                      ? 'warning'
-                      : 'neutral'
+                    ? 'warning'
+                    : 'neutral'
                 "
                 variant="subtle"
                 size="sm"
@@ -302,7 +284,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
             <p class="mt-1 text-xs leading-relaxed text-slate-500">
               {{ assessment.description }}
             </p>
-
           </div>
         </div>
       </div>
@@ -312,7 +293,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
       <div
         class="grid grid-cols-1 gap-4 border-b border-slate-100 p-4 sm:grid-cols-2 dark:border-slate-800"
       >
-
         <!-- PENGISI ASESMEN -->
 
         <div>
@@ -338,10 +318,7 @@ function saveAssessment(status: "Draft" | "Selesai") {
             v-else
             class="flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 dark:border-slate-700 dark:bg-slate-800"
           >
-            <UIcon
-              name="i-lucide-user-round"
-              class="size-4 text-emerald-600"
-            />
+            <UIcon name="i-lucide-user-round" class="size-4 text-emerald-600" />
 
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200">
               {{ formAuthor || "-" }}
@@ -372,17 +349,13 @@ function saveAssessment(status: "Draft" | "Selesai") {
             v-else
             class="flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 dark:border-slate-700 dark:bg-slate-800"
           >
-            <UIcon
-              name="i-lucide-calendar-days"
-              class="size-4 text-emerald-600"
-            />
+            <UIcon name="i-lucide-calendar-days" class="size-4 text-emerald-600" />
 
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200">
               {{ formatDate(formDate) }}
             </span>
           </div>
         </div>
-
       </div>
 
       <!-- ACTION BAR -->
@@ -390,7 +363,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
       <div
         class="flex flex-col gap-3 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-800/30"
       >
-
         <div>
           <p class="text-xs font-bold text-slate-800 dark:text-white">
             {{ isEditing ? "Mode Pengisian" : "Pengelolaan Asesmen" }}
@@ -401,18 +373,16 @@ function saveAssessment(status: "Draft" | "Selesai") {
               isEditing
                 ? "Pastikan seluruh informasi sudah sesuai sebelum menyimpan."
                 : isReadOnly
-                  ? "Asesmen telah diselesaikan dan tidak dapat diubah."
-                  : "Periksa hasil pengkajian atau lanjutkan pengisian."
+                ? "Asesmen telah diselesaikan dan tidak dapat diubah."
+                : "Periksa hasil pengkajian atau lanjutkan pengisian."
             }}
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 sm:justify-end">
-
           <!-- MODE EDIT -->
 
           <template v-if="isEditing">
-
             <UButton
               color="neutral"
               variant="outline"
@@ -442,7 +412,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
             >
               Selesaikan
             </UButton>
-
           </template>
 
           <!-- MODE DRAFT -->
@@ -460,26 +429,17 @@ function saveAssessment(status: "Draft" | "Selesai") {
 
           <!-- MODE SELESAI -->
 
-          <UBadge
-            v-else-if="isReadOnly"
-            color="success"
-            variant="subtle"
-          >
+          <UBadge v-else-if="isReadOnly" color="success" variant="subtle">
             <UIcon name="i-lucide-lock" class="mr-1 size-3" />
             Asesmen Terkunci
           </UBadge>
 
           <!-- MODE BELUM DIISI -->
 
-          <UBadge
-            v-else
-            color="info"
-            variant="subtle"
-          >
+          <UBadge v-else color="info" variant="subtle">
             <UIcon name="i-lucide-file-pen-line" class="mr-1 size-3" />
             Siap Diisi
           </UBadge>
-
         </div>
       </div>
     </div>
@@ -492,10 +452,7 @@ function saveAssessment(status: "Draft" | "Selesai") {
       v-if="isNew"
       class="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-3 dark:border-blue-900/50 dark:bg-blue-950/20"
     >
-      <UIcon
-        name="i-lucide-info"
-        class="mt-0.5 size-4 shrink-0 text-blue-600"
-      />
+      <UIcon name="i-lucide-info" class="mt-0.5 size-4 shrink-0 text-blue-600" />
 
       <div>
         <p class="text-xs font-semibold text-blue-800 dark:text-blue-300">
@@ -503,8 +460,8 @@ function saveAssessment(status: "Draft" | "Selesai") {
         </p>
 
         <p class="mt-1 text-[11px] leading-relaxed text-blue-700 dark:text-blue-400">
-          Silakan lengkapi formulir pengkajian. Data dapat disimpan sebagai
-          draft atau diselesaikan.
+          Silakan lengkapi formulir pengkajian. Data dapat disimpan sebagai draft atau
+          diselesaikan.
         </p>
       </div>
     </div>
@@ -514,25 +471,20 @@ function saveAssessment(status: "Draft" | "Selesai") {
     <!-- ================================== -->
 
     <section v-if="formVitals.length" class="space-y-3">
-
       <div>
         <h3 class="text-sm font-bold text-slate-800 dark:text-white">
           Tanda-Tanda Vital
         </h3>
 
-        <p class="mt-1 text-xs text-slate-500">
-          Hasil pengukuran kondisi vital pasien.
-        </p>
+        <p class="mt-1 text-xs text-slate-500">Hasil pengukuran kondisi vital pasien.</p>
       </div>
 
       <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-
         <div
           v-for="vital in formVitals"
           :key="vital.label"
           class="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900"
         >
-
           <div class="flex items-center justify-between gap-2">
             <p class="text-[11px] text-slate-500">
               {{ vital.label }}
@@ -545,7 +497,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
           </div>
 
           <template v-if="isEditing">
-
             <UInput
               v-model="vital.value"
               size="sm"
@@ -557,11 +508,9 @@ function saveAssessment(status: "Draft" | "Selesai") {
             <p class="mt-1 text-[10px] text-slate-400">
               {{ vital.unit }}
             </p>
-
           </template>
 
           <div v-else class="mt-3 flex items-baseline gap-1">
-
             <span class="text-xl font-bold text-slate-800 dark:text-white">
               {{ vital.value || "-" }}
             </span>
@@ -569,7 +518,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
             <span class="text-[10px] text-slate-400">
               {{ vital.unit }}
             </span>
-
           </div>
         </div>
       </div>
@@ -580,7 +528,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
     <!-- ================================== -->
 
     <section class="space-y-3">
-
       <div>
         <h3 class="text-sm font-bold text-slate-800 dark:text-white">
           {{ isEditing ? "Formulir Pengkajian" : "Hasil Pengkajian" }}
@@ -602,7 +549,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
         :key="section.title"
         class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
       >
-
         <!-- SECTION HEADER -->
 
         <div
@@ -615,7 +561,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
           </div>
 
           <div class="min-w-0 flex-1">
-
             <div class="flex items-center gap-2">
               <span
                 class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
@@ -628,26 +573,20 @@ function saveAssessment(status: "Draft" | "Selesai") {
               </h4>
             </div>
 
-            <p
-              v-if="section.description"
-              class="mt-1 text-[11px] text-slate-500"
-            >
+            <p v-if="section.description" class="mt-1 text-[11px] text-slate-500">
               {{ section.description }}
             </p>
-
           </div>
         </div>
 
         <!-- SECTION FIELDS -->
 
         <div class="divide-y divide-slate-100 px-4 dark:divide-slate-800">
-
           <div
             v-for="field in section.fields"
             :key="field.label"
             class="grid grid-cols-1 gap-2 py-3 sm:grid-cols-[200px_minmax(0,1fr)] sm:items-center sm:gap-5"
           >
-
             <label class="text-xs font-medium text-slate-600 dark:text-slate-400">
               {{ field.label }}
 
@@ -679,7 +618,6 @@ function saveAssessment(status: "Draft" | "Selesai") {
                 {{ field.value || "Belum diisi" }}
               </p>
             </div>
-
           </div>
         </div>
       </div>
@@ -690,16 +628,10 @@ function saveAssessment(status: "Draft" | "Selesai") {
         v-if="!formSections.length"
         class="rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"
       >
-        <UIcon
-          name="i-lucide-file-search"
-          class="mx-auto size-8 text-slate-400"
-        />
+        <UIcon name="i-lucide-file-search" class="mx-auto size-8 text-slate-400" />
 
-        <p class="mt-2 text-xs text-slate-500">
-          Belum ada data pengkajian.
-        </p>
+        <p class="mt-2 text-xs text-slate-500">Belum ada data pengkajian.</p>
       </div>
-
     </section>
 
     <!-- ================================== -->
@@ -710,10 +642,7 @@ function saveAssessment(status: "Draft" | "Selesai") {
       v-if="isEditing && missingFields > 0"
       class="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/20"
     >
-      <UIcon
-        name="i-lucide-alert-circle"
-        class="mt-0.5 size-4 shrink-0 text-amber-600"
-      />
+      <UIcon name="i-lucide-alert-circle" class="mt-0.5 size-4 shrink-0 text-amber-600" />
 
       <div>
         <p class="text-xs font-semibold text-amber-800 dark:text-amber-300">
@@ -721,8 +650,8 @@ function saveAssessment(status: "Draft" | "Selesai") {
         </p>
 
         <p class="mt-1 text-[11px] text-amber-700 dark:text-amber-400">
-          Masih ada {{ missingFields }} data yang belum diisi.
-          Lengkapi seluruh input sebelum menyelesaikan asesmen.
+          Masih ada {{ missingFields }} data yang belum diisi. Lengkapi seluruh input
+          sebelum menyelesaikan asesmen.
         </p>
       </div>
     </div>
@@ -735,9 +664,7 @@ function saveAssessment(status: "Draft" | "Selesai") {
       class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-slate-800"
     >
       <div>
-        <p class="text-[11px] text-slate-400">
-          Kode Asesmen
-        </p>
+        <p class="text-[11px] text-slate-400">Kode Asesmen</p>
 
         <p class="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
           {{ assessment.code }}
@@ -752,6 +679,5 @@ function saveAssessment(status: "Draft" | "Selesai") {
         }}
       </span>
     </div>
-
   </div>
 </template>

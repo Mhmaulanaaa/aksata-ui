@@ -103,6 +103,122 @@ const activities = [
 ];
 
 // ==========================================
+// DATA DEMOGRAFI PASIEN
+// ==========================================
+
+const isDemographicOpen = ref(false);
+
+type DemographicField = {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  full?: boolean;
+};
+
+const demographicGroups: Array<{
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  fields: DemographicField[];
+}> = [
+  {
+    id: "identitas",
+    title: "Data Awal",
+    description: "Identitas dan informasi dasar pasien",
+    icon: "i-lucide-user-round",
+    color: "blue",
+    fields: [
+      { label: "No. Rekam Medik", value: "13178782" },
+      { label: "No. Induk Kependudukan", value: "3513105406830002" },
+      { label: "No. Rekam Medik Lama", value: "-" },
+      { label: "No. Identitas Lain", value: "-" },
+      { label: "Nama Pasien", value: "Ny. Wahyu Farida Astutik", highlight: true },
+      { label: "Tempat Lahir", value: "MOJOKERTO KOTA" },
+      { label: "Tanggal Lahir", value: "14 Juni 1983" },
+      { label: "Umur", value: "43 Tahun, 4 Bulan, 28 Hari" },
+      { label: "Jenis Kelamin", value: "PEREMPUAN" },
+      { label: "Status Perkawinan", value: "KAWIN" },
+      { label: "Anak Ke", value: "0 dari 0 bersaudara" },
+      { label: "Pekerjaan", value: "Bidan" },
+      { label: "Warga Negara", value: "INDONESIA" },
+      { label: "Agama", value: "ISLAM" },
+      { label: "Suku", value: "-" },
+      { label: "Bahasa", value: "-" },
+      { label: "Pendidikan", value: "-" },
+    ],
+  },
+  {
+    id: "alamat",
+    title: "Alamat dan Kontak",
+    description: "Informasi alamat kependudukan dan domisili pasien",
+    icon: "i-lucide-map-pin",
+    color: "emerald",
+    fields: [
+      {
+        label: "Alamat Sesuai KTP",
+        value: "DUSUN KEDUNG PAWON, RT 001 / RW 001, SUMBER KEMBAR",
+        full: true,
+      },
+      {
+        label: "Alamat Domisili",
+        value: "DUSUN KEDUNG PAWON, RT 001 / RW 001, SUMBER KEMBAR",
+        full: true,
+      },
+      { label: "RT / RW (KTP)", value: "- / -" },
+      { label: "RT / RW (Domisili)", value: "- / -" },
+      { label: "Desa / Kelurahan (KTP)", value: "-" },
+      { label: "Desa / Kelurahan (Domisili)", value: "-" },
+      { label: "Kecamatan (KTP)", value: "Pakuniran" },
+      { label: "Kecamatan (Domisili)", value: "Pakuniran" },
+      { label: "Kabupaten / Kota (KTP)", value: "Probolinggo" },
+      { label: "Kabupaten / Kota (Domisili)", value: "Probolinggo" },
+      { label: "Provinsi (KTP)", value: "Jawa Timur" },
+      { label: "Provinsi (Domisili)", value: "Jawa Timur" },
+      { label: "Alamat Email", value: "-" },
+      { label: "Telepon Pasien", value: "-" },
+      { label: "Mobile Pasien", value: "081230805441" },
+    ],
+  },
+  {
+    id: "tambahan",
+    title: "Informasi Tambahan",
+    description: "Informasi keluarga dan identitas lainnya",
+    icon: "i-lucide-clipboard-list",
+    color: "violet",
+    fields: [
+      { label: "Nama Ayah", value: "-" },
+      { label: "Nama Ibu", value: "-" },
+      { label: "Golongan Darah", value: "-" },
+    ],
+  },
+  {
+    id: "pengantar",
+    title: "Data Pengantar",
+    description: "Identitas dan informasi pihak yang mengantar pasien",
+    icon: "i-lucide-users",
+    color: "amber",
+    fields: [
+      { label: "Nama Pengantar", value: "HENO PURNIAWATI" },
+      { label: "Jenis Kelamin", value: "PEREMPUAN" },
+      { label: "No. Identitas", value: "3513105406830002" },
+      { label: "Hubungan Keluarga", value: "YANG BERSANGKUTAN" },
+      { label: "Tempat Lahir", value: "MOJOKERTO" },
+      { label: "Tanggal Lahir", value: "14 Juni 1983" },
+      { label: "Umur", value: "43 Tahun, 4 Bulan, 28 Hari" },
+      {
+        label: "Alamat",
+        value: "DUSUN KEDUNG PAWON RT 1 DESA SUMBER KEMBAR, PAKUNIRAN, PROBOLINGGO",
+        full: true,
+      },
+      { label: "No. Telepon", value: "081230418735" },
+      { label: "No. Mobile", value: "081230418735" },
+    ],
+  },
+];
+
+// ==========================================
 // INFORMASI KUNJUNGAN TERAKHIR
 // ==========================================
 
@@ -275,6 +391,142 @@ const serviceInformation = [
         </p>
       </button>
     </div>
+
+    <!-- ===================================== -->
+    <!-- DATA DEMOGRAFI PASIEN -->
+    <!-- ===================================== -->
+
+    <section
+      class="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+    >
+      <!-- ACCORDION HEADER -->
+      <button
+        type="button"
+        class="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 dark:hover:bg-slate-800/40"
+        :aria-expanded="isDemographicOpen"
+        @click="isDemographicOpen = !isDemographicOpen"
+      >
+        <div class="flex min-w-0 items-center gap-2.5">
+          <div
+            class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+          >
+            <UIcon name="i-lucide-contact-round" class="size-4" />
+          </div>
+
+          <div class="min-w-0">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-white">
+              Data Demografi Pasien
+            </h3>
+            <p class="mt-0.5 text-[10px] text-slate-400">
+              Informasi identitas, kependudukan, dan data keluarga pasien
+            </p>
+          </div>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-2">
+          <UBadge color="info" variant="subtle">
+            <UIcon name="i-lucide-database" class="mr-1 size-3" />
+            Data Pasien
+          </UBadge>
+
+          <div
+            class="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-transform duration-300 dark:bg-slate-800 dark:text-slate-400"
+            :class="{ 'rotate-180': isDemographicOpen }"
+          >
+            <UIcon name="i-lucide-chevron-down" class="size-4" />
+          </div>
+        </div>
+      </button>
+
+      <!-- ACCORDION CONTENT -->
+      <div
+        v-show="isDemographicOpen"
+        class="border-t border-slate-100 dark:border-slate-800"
+      >
+        <div class="space-y-4 p-4">
+          <div
+            v-for="group in demographicGroups"
+            :key="group.id"
+            class="overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800"
+          >
+            <!-- SUB HEADER -->
+            <div
+              class="flex items-center gap-2.5 border-b border-slate-100 bg-slate-50/70 px-3.5 py-3 dark:border-slate-800 dark:bg-slate-800/40"
+            >
+              <div
+                class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                :class="{
+                  'bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400':
+                    group.color === 'blue',
+                  'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400':
+                    group.color === 'emerald',
+                  'bg-violet-100 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400':
+                    group.color === 'violet',
+                  'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400':
+                    group.color === 'amber',
+                }"
+              >
+                <UIcon :name="group.icon" class="size-4" />
+              </div>
+
+              <div class="min-w-0">
+                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {{ group.title }}
+                </h4>
+                <p class="mt-0.5 text-[10px] text-slate-400">
+                  {{ group.description }}
+                </p>
+              </div>
+            </div>
+
+            <!-- FIELD INFORMATION -->
+            <div
+              class="grid grid-cols-1 gap-x-5 gap-y-4 p-3.5 sm:grid-cols-2 xl:grid-cols-4"
+            >
+              <div
+                v-for="field in group.fields"
+                :key="field.label"
+                class="min-w-0"
+                :class="field.full ? 'sm:col-span-2 xl:col-span-4' : ''"
+              >
+                <p
+                  class="text-[9px] font-semibold uppercase tracking-wider text-slate-400"
+                >
+                  {{ field.label }}
+                </p>
+
+                <p
+                  class="mt-1.5 break-words text-xs leading-relaxed"
+                  :class="
+                    field.highlight
+                      ? 'font-bold text-emerald-600 dark:text-emerald-400'
+                      : 'font-medium text-slate-700 dark:text-slate-300'
+                  "
+                >
+                  {{ field.value || "-" }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- INFORMASI PRIVASI -->
+          <div
+            class="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/40 dark:bg-blue-950/20"
+          >
+            <UIcon
+              name="i-lucide-shield-check"
+              class="mt-0.5 size-3.5 shrink-0 text-blue-600 dark:text-blue-400"
+            />
+
+            <p class="text-[10px] leading-relaxed text-blue-700 dark:text-blue-400">
+              Informasi demografi merupakan data identitas pasien yang digunakan sebagai
+              referensi administrasi dan pelayanan kesehatan. Pastikan kesesuaian data
+              dengan dokumen identitas resmi pasien.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ===================================== -->
     <!-- KUNJUNGAN TERAKHIR -->

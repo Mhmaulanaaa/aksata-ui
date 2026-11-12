@@ -13,27 +13,70 @@ useHead({
 
 const searchQuery = ref("");
 const activeTab = ref("Belum Diperiksa");
+const activeService = ref("Semua");
 
-const tabs = [
+const showAllPatients = () => {
+  activeService.value = "Semua";
+  activeTab.value = "Semua Status";
+  searchQuery.value = "";
+};
+
+const quickFilters = [
   {
-    label: "Belum Diperiksa",
-    value: "Belum Diperiksa",
-    count: 9,
-    icon: "i-lucide-clock",
+    label: "Semua Pasien",
+    value: "Semua",
+    icon: "i-lucide-users",
   },
   {
-    label: "Sudah Diperiksa",
-    value: "Sudah Diperiksa",
-    count: 0,
-    icon: "i-lucide-check-circle",
+    label: "Rawat Jalan",
+    value: "Rawat Jalan",
+    icon: "i-lucide-stethoscope",
+  },
+  {
+    label: "Rawat Inap",
+    value: "Rawat Inap",
+    icon: "i-lucide-bed",
+  },
+  {
+    label: "Rawat Darurat",
+    value: "Rawat Darurat",
+    icon: "i-lucide-ambulance",
+  },
+  {
+    label: "Operasi",
+    value: "Operasi",
+    icon: "i-lucide-heart-pulse",
   },
   {
     label: "Konsultasi",
     value: "Konsultasi",
-    count: 0,
-    icon: "i-lucide-stethoscope",
+    icon: "i-lucide-message-circle",
   },
 ];
+
+// Filter cepat berdasarkan jenis pelayanan atau konsultasi
+const selectQuickFilter = (value: string) => {
+  searchQuery.value = "";
+
+  if (value === "Konsultasi") {
+    activeService.value = "Semua";
+    activeTab.value = "Konsultasi";
+    return;
+  }
+
+  activeService.value = value;
+  activeTab.value = "Semua Status";
+};
+
+const activeQuickFilter = computed(() => {
+  if (activeTab.value === "Konsultasi") return "Konsultasi";
+
+  if (activeService.value !== "Semua") {
+    return activeService.value;
+  }
+
+  return activeTab.value === "Semua Status" ? "Semua" : null;
+});
 
 /* ================= STATISTICS ================= */
 
@@ -41,6 +84,7 @@ const stats = [
   {
     title: "Total Pasien",
     value: 3817,
+    filter: "Semua",
     icon: "i-lucide-users",
     color: "slate",
     iconColor: "text-slate-600 dark:text-slate-300",
@@ -50,6 +94,7 @@ const stats = [
   {
     title: "Rawat Jalan",
     value: 2809,
+    filter: "Rawat Jalan",
     icon: "i-lucide-stethoscope",
     color: "violet",
     iconColor: "text-violet-600 dark:text-violet-300",
@@ -59,6 +104,7 @@ const stats = [
   {
     title: "Rawat Inap",
     value: 936,
+    filter: "Rawat Inap",
     icon: "i-lucide-bed",
     color: "sky",
     iconColor: "text-sky-600 dark:text-sky-300",
@@ -66,8 +112,9 @@ const stats = [
     iconBg: "bg-sky-100 dark:bg-sky-900/50",
   },
   {
-    title: "Gawat Darurat",
+    title: "Rawat Darurat",
     value: 72,
+    filter: "Rawat Darurat",
     icon: "i-lucide-ambulance",
     color: "rose",
     iconColor: "text-rose-600 dark:text-rose-300",
@@ -77,6 +124,7 @@ const stats = [
   {
     title: "Operasi",
     value: 27,
+    filter: "Operasi",
     icon: "i-lucide-heart-pulse",
     color: "teal",
     iconColor: "text-teal-600 dark:text-teal-300",
@@ -179,7 +227,107 @@ const patients = ref<Patient[]>([
     pelayanan: "Rawat Jalan",
     checkedIn: true,
   },
+
+  {
+    id: 5,
+    nama: "Pasien E",
+    noRm: "XXXXXXXX",
+    dpjp: "dr. Spesialis Penyakit Dalam",
+    tanggalLahir: "15 Agustus 1965",
+    usia: "61 tahun",
+    noRegistrasi: "RI2611050012",
+    tanggalRegistrasi: "05/11/2026 10:15:00",
+    divisi: "Penyakit Dalam",
+    poli: "Ruang Rawat Inap Anggrek",
+    instalasi: "Instalasi Rawat Inap",
+    antrian: "RI-001",
+    sign: true,
+    status: "Belum Diperiksa",
+    pelayanan: "Rawat Inap",
+    checkedIn: true,
+  },
+  {
+    id: 6,
+    nama: "Pasien F",
+    noRm: "XXXXXXXX",
+    dpjp: "dr. Spesialis Bedah",
+    tanggalLahir: "21 Februari 1995",
+    usia: "31 tahun",
+    noRegistrasi: "GD2611050025",
+    tanggalRegistrasi: "05/11/2026 11:20:00",
+    divisi: "Instalasi Gawat Darurat",
+    poli: "Ruang Resusitasi",
+    instalasi: "Instalasi Gawat Darurat",
+    antrian: "IGD-001",
+    sign: true,
+    status: "Belum Diperiksa",
+    pelayanan: "Rawat Darurat",
+    checkedIn: true,
+  },
+  {
+    id: 7,
+    nama: "Pasien G",
+    noRm: "XXXXXXXX",
+    dpjp: "dr. Spesialis Bedah Orthopedi",
+    tanggalLahir: "10 Mei 1988",
+    usia: "38 tahun",
+    noRegistrasi: "OP2611050008",
+    tanggalRegistrasi: "05/11/2026 12:30:00",
+    divisi: "Bedah Orthopedi",
+    poli: "Kamar Operasi 2",
+    instalasi: "Instalasi Bedah Sentral",
+    antrian: "OK-001",
+    sign: true,
+    status: "Sudah Diperiksa",
+    pelayanan: "Operasi",
+    checkedIn: true,
+  },
 ]);
+
+// Badge
+const getPelayananBadgeClass = (pelayanan: string) => {
+  const styles: Record<string, string> = {
+    "Rawat Jalan":
+      "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200 dark:bg-violet-500/10 dark:text-violet-400 dark:ring-violet-500/20",
+
+    "Rawat Inap":
+      "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20",
+
+    "Rawat Darurat":
+      "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20",
+
+    Operasi:
+      "bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:ring-teal-500/20",
+  };
+
+  return (
+    styles[pelayanan] ??
+    "bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200 dark:bg-gray-500/10 dark:text-gray-400 dark:ring-gray-500/20"
+  );
+};
+
+/* ================= STATUS TABS ================= */
+
+const tabs = computed(() => {
+  const statuses = ["Semua Status", "Belum Diperiksa", "Sudah Diperiksa", "Konsultasi"];
+
+  return statuses.map((status) => ({
+    label: status === "Semua Status" ? "Semua Pasien" : status,
+    value: status,
+    count:
+      status === "Semua Status"
+        ? patients.value.length
+        : patients.value.filter((patient) => patient.status === status).length,
+    icon:
+      status === "Semua Status"
+        ? "i-lucide-users"
+        : status === "Belum Diperiksa"
+        ? "i-lucide-clock"
+        : status === "Sudah Diperiksa"
+        ? "i-lucide-check-circle"
+        : "i-lucide-stethoscope",
+  }));
+});
 
 /* ================= FILTERED PATIENTS ================= */
 
@@ -187,25 +335,70 @@ const filteredPatients = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase();
 
   return patients.value.filter((patient) => {
-    const matchesTab = patient.status === activeTab.value;
+    // Filter berdasarkan jenis pelayanan
+    const matchesService =
+      activeService.value === "Semua" ||
+      patient.pelayanan.toLowerCase() === activeService.value.toLowerCase();
+
+    // Filter berdasarkan status pemeriksaan
+    const matchesTab =
+      activeTab.value === "Semua Status" || patient.status === activeTab.value;
+
+    // Pencarian berdasarkan informasi pasien
+    const searchableFields = [
+      patient.nama,
+      patient.noRm,
+      patient.noRegistrasi,
+      patient.dpjp,
+      patient.tanggalLahir,
+      patient.usia,
+      patient.divisi,
+      patient.poli,
+      patient.instalasi,
+      patient.antrian,
+      patient.pelayanan,
+      patient.status,
+    ];
 
     const matchesSearch =
-      !keyword ||
-      patient.nama.toLowerCase().includes(keyword) ||
-      patient.noRm.toLowerCase().includes(keyword) ||
-      patient.noRegistrasi.toLowerCase().includes(keyword) ||
-      patient.poli.toLowerCase().includes(keyword) ||
-      patient.antrian.toLowerCase().includes(keyword);
+      !keyword || searchableFields.some((field) => field.toLowerCase().includes(keyword));
 
-    return matchesTab && matchesSearch;
+    return matchesService && matchesTab && matchesSearch;
   });
 });
 
-/* ================= ACTIONS ================= */
+/* ================= FILTER ACTIONS ================= */
 
+// Klik salah satu card statistik
+const selectService = (service: string) => {
+  activeService.value = service;
+
+  // Card statistik menampilkan seluruh status pemeriksaan
+  activeTab.value = "Semua Status";
+
+  // Bersihkan pencarian sebelumnya
+  searchQuery.value = "";
+};
+
+// Klik tab status pemeriksaan
 const selectTab = (tab: string) => {
   activeTab.value = tab;
 };
+
+// Reset seluruh filter
+const resetFilters = () => {
+  searchQuery.value = "";
+  activeService.value = "Semua";
+  activeTab.value = "Belum Diperiksa";
+};
+
+// Pencarian berjalan secara reaktif ketika pengguna mengetik.
+// Tombol Cari Pasien hanya membantu merapikan input.
+const applySearch = () => {
+  searchQuery.value = searchQuery.value.trim();
+};
+
+/* ================= PATIENT ACTIONS ================= */
 
 const handleCheckIn = (patient: Patient) => {
   patient.checkedIn = true;
@@ -220,7 +413,11 @@ const handlePatientDetail = (patient: Patient) => {
   navigateTo(`/dashboard/pasien/${patient.id}`);
 };
 
-const formatNumber = (value: number) => value.toLocaleString("id-ID");
+/* ================= HELPERS ================= */
+
+const formatNumber = (value: number) => {
+  return value.toLocaleString("id-ID");
+};
 </script>
 
 <template>
@@ -233,12 +430,18 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
       class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5"
     >
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        <div
+        <button
           v-for="stat in stats"
           :key="stat.title"
+          type="button"
+          :aria-pressed="activeService === stat.filter"
+          @click="selectService(stat.filter)"
           :class="[
-            'group relative flex min-h-[125px] items-center justify-between overflow-hidden rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md',
+            'group relative flex min-h-[125px] w-full items-center justify-between overflow-hidden rounded-xl p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
             stat.bg,
+            activeService === stat.filter
+              ? 'ring-2 ring-emerald-500 shadow-md shadow-emerald-500/10'
+              : 'ring-1 ring-transparent',
           ]"
         >
           <div class="relative z-10 min-w-0">
@@ -252,7 +455,11 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
               {{ formatNumber(stat.value) }}
             </p>
 
-            <p class="mt-1 text-[10px] text-slate-400">Data pelayanan</p>
+            <p class="mt-1 text-[10px] text-slate-400">
+              {{
+                activeService === stat.filter ? "Filter aktif" : "Klik untuk melihat data"
+              }}
+            </p>
           </div>
 
           <div
@@ -267,7 +474,14 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
           <div
             class="absolute -bottom-8 -right-8 h-24 w-24 rounded-full bg-white/30 dark:bg-white/5"
           />
-        </div>
+
+          <div
+            v-if="activeService === stat.filter"
+            class="absolute right-3 top-3 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm"
+          >
+            <UIcon name="i-lucide-check" class="h-3 w-3" />
+          </div>
+        </button>
       </div>
     </section>
 
@@ -309,8 +523,9 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
       </div>
 
       <!-- SEARCH -->
+
       <div class="px-4 py-4 sm:px-5">
-        <div class="flex flex-col gap-2 sm:flex-row">
+        <form class="flex flex-col gap-2 sm:flex-row" @submit.prevent="applySearch">
           <div class="relative flex-1">
             <UIcon
               name="i-lucide-search"
@@ -320,25 +535,37 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
             <input
               v-model="searchQuery"
               type="search"
-              placeholder="Cari nama pasien, nomor rekam medis, nomor registrasi..."
+              placeholder="Cari nama, No. RM, registrasi, DPJP, poli, instalasi..."
               class="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-xs text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             />
+
+            <button
+              v-if="searchQuery"
+              type="button"
+              aria-label="Hapus pencarian"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-rose-500"
+              @click="searchQuery = ''"
+            >
+              <UIcon name="i-lucide-x" class="h-4 w-4" />
+            </button>
           </div>
 
           <UButton
+            type="submit"
             color="primary"
             icon="i-lucide-search"
             class="h-11 justify-center rounded-xl px-5"
           >
             Cari Pasien
           </UButton>
-        </div>
+        </form>
       </div>
 
       <!-- STATUS TABS -->
+
       <div class="px-4 pb-4 sm:px-5">
         <div
-          class="grid grid-cols-1 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800 sm:grid-cols-3"
+          class="grid grid-cols-1 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800 sm:grid-cols-2 xl:grid-cols-4"
         >
           <button
             v-for="tab in tabs"
@@ -380,11 +607,30 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
             <h3 class="text-sm font-bold text-slate-800 dark:text-white">
               Antrean Pelayanan
             </h3>
+
             <p class="mt-1 text-[11px] text-slate-400">
               Daftar pasien berdasarkan status pemeriksaan
             </p>
+
+            <!-- ACTIVE FILTER INDICATORS -->
+            <div class="mt-3 flex flex-wrap items-center gap-2">
+              <span
+                class="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"
+              >
+                <UIcon name="i-lucide-filter" class="h-3 w-3" />
+                {{ activeService === "Semua" ? "Semua Jenis Pelayanan" : activeService }}
+              </span>
+
+              <span
+                class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+              >
+                <UIcon name="i-lucide-clipboard-check" class="h-3 w-3" />
+                {{ activeTab === "Semua Status" ? "Semua Status" : activeTab }}
+              </span>
+            </div>
           </div>
 
+          <!-- MONITORING STATUS -->
           <div class="flex items-center gap-2">
             <span
               class="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"
@@ -483,7 +729,8 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
                   </span>
 
                   <span
-                    class="rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+                    :class="getPelayananBadgeClass(patient.pelayanan)"
                   >
                     {{ patient.pelayanan }}
                   </span>
@@ -697,9 +944,24 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
               Tidak Ada Pasien
             </h3>
 
-            <p class="mt-1 text-xs text-slate-400">
-              Belum ada data pasien pada kategori ini.
+            <p class="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400">
+              Tidak ditemukan pasien dengan kriteria
+              <strong>{{ activeService }}</strong>
+              dan status
+              <strong>{{ activeTab }}</strong
+              >. Coba ubah filter atau kata kunci pencarian.
             </p>
+
+            <UButton
+              color="primary"
+              variant="soft"
+              size="sm"
+              icon="i-lucide-refresh-cw"
+              class="mt-4 rounded-lg"
+              @click="resetFilters"
+            >
+              Reset Filter
+            </UButton>
           </div>
         </div>
 
@@ -710,9 +972,13 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
             <strong class="text-slate-700 dark:text-slate-200">
               {{ filteredPatients.length }}
             </strong>
-            pasien pada kategori
+            pasien dari
+            <strong class="text-slate-700 dark:text-slate-200">
+              {{ activeService === "Semua" ? "semua pelayanan" : activeService }}
+            </strong>
+            dengan status
             <strong class="text-emerald-600 dark:text-emerald-400">
-              {{ activeTab }}
+              {{ activeTab === "Semua Status" ? "semua status" : activeTab }}
             </strong>
           </p>
 
@@ -723,9 +989,9 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
               size="sm"
               icon="i-lucide-refresh-cw"
               class="rounded-lg"
-              @click="searchQuery = ''"
+              @click="resetFilters"
             >
-              Reset Pencarian
+              Reset Filter
             </UButton>
 
             <UButton
@@ -734,6 +1000,7 @@ const formatNumber = (value: number) => value.toLocaleString("id-ID");
               size="sm"
               trailing-icon="i-lucide-arrow-right"
               class="rounded-lg"
+              @click="showAllPatients"
             >
               Lihat Semua
             </UButton>
