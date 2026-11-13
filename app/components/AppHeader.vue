@@ -170,6 +170,18 @@ function handleLogout() {
           <i class="fas fa-search text-base" />
         </button>
 
+        <!-- Bed Monitoring -->
+        <NuxtLink
+          to="/dashboard/bed-monitoring"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Bed Monitoring"
+          title="Bed Monitoring"
+          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-emerald-400"
+        >
+          <i class="fas fa-bed text-base" />
+        </NuxtLink>
+
         <!-- Dark Mode -->
         <button
           type="button"
